@@ -8,12 +8,14 @@ const LibreBaskerville = Libre_Baskerville({
 });
 
 const Button = (props) => {
-  const { text, dark } = props;
+  const { text, dark, full, clickHandler } = props;
   return (
     <button
+      onClick={clickHandler}
       className={
         "rounded-full overflow-hidden duration-200 hover:opacity-60 border-2 border-solid border-indigo-900 " +
-        (dark ? " text-white bg-indigo-900" : " text-indigo-900")
+        (dark ? " text-white bg-indigo-900" : " text-indigo-900 ") +
+        (full ? "grid place-items-center w-full" : " ")
       }
     >
       <p

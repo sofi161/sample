@@ -1,5 +1,7 @@
 import { Libre_Baskerville, Open_Sans } from "next/font/google";
 import "./globals.css";
+import Link from "next/link";
+import { AuthProvider } from "@/context/AuthContext";
 
 const LibreBaskerville = Libre_Baskerville({
   variable: "--font-libre",
@@ -21,13 +23,16 @@ export const metadata = {
 export default function RootLayout({ children }) {
   const header = (
     <header className="p-4 sm:p-8 flex items-center justify-between gap-4">
-      <h1
-        className={
-          "text-base sm:text-lg textGradient " + LibreBaskerville.className
-        }
-      >
-        Moodl
-      </h1>
+      <Link href={"/"}>
+        <h1
+          className={
+            "text-base sm:text-lg textGradient " + LibreBaskerville.className
+          }
+        >
+          Moodl
+        </h1>
+      </Link>
+
       <div className="flex items-center justify-between">something here</div>
     </header>
   );
@@ -41,16 +46,18 @@ export default function RootLayout({ children }) {
   );
   return (
     <html lang="en">
-      <body
-        className={
-          "w-full max-w-[1000px] mx-auto text-sm sm:text-base min-h-screen flex flex-col text-gray-700 " +
-          OpenSans.className
-        }
-      >
-        {header}
-        {children}
-        {footer}
-      </body>
+      <AuthProvider>
+        <body
+          className={
+            "w-full max-w-[1000px] mx-auto text-sm sm:text-base min-h-screen flex flex-col text-gray-700 " +
+            OpenSans.className
+          }
+        >
+          {header}
+          {children}
+          {footer}
+        </body>
+      </AuthProvider>
     </html>
   );
 }

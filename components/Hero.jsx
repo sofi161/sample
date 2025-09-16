@@ -2,6 +2,7 @@ import React from "react";
 import { Libre_Baskerville } from "next/font/google";
 import Button from "./Button";
 import Calendar from "./Calendar";
+import Link from "next/link";
 
 const LibreBaskerville = Libre_Baskerville({
   variable: "--font-libre",
@@ -26,11 +27,15 @@ const Hero = () => {
         <span className="font-semibold">every day of every year.</span>
       </p>
       <div className="grid grid-cols-2 gap-4 w-fit mx-auto">
-        <Button text="Sign Up" />
-        <Button text="Login" dark />
+        <Link href={"/dashboard"}>
+          <Button text="Sign Up" />
+        </Link>
+        <Link href={"/dashboard"}>
+          <Button text="Login" dark />
+        </Link>
       </div>
 
-      <Calendar />
+      <Calendar demo />
     </div>
   );
 };
