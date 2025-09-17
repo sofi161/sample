@@ -35,7 +35,7 @@ const dayList = [
 ];
 
 export default function Calendar(props) {
-  const { demo, Data, handleSetMood } = props;
+  const { demo, completeData, handleSetMood } = props;
   const now = new Date();
   const currMonth = now.getMonth();
   const [selectedMonth, setSelectMonth] = useState(
@@ -44,8 +44,7 @@ export default function Calendar(props) {
   const [selectedYear, setSelectedYear] = useState(now.getFullYear());
 
   const numericMonth = monthsArr.indexOf(selectedMonth);
-  const data = Data?.[selectedYear]?.[numericMonth] || {};
-
+  const data = completeData?.[selectedYear]?.[numericMonth] || {};
   function handleIncrementMonth(val) {
     // value +1 -1
     // if we hit the bounds of the months, then we can just adjust the year that is displayed instead
@@ -79,7 +78,7 @@ export default function Calendar(props) {
   const numRows = Math.floor(daysToDisplay / 7) + (daysToDisplay % 7 ? 1 : 0);
 
   return (
-    <div className="flex flex-col gap-1 overflow-hidden py-4 sm:py-6 md:py-10">
+    <div className="flex flex-col gap-4 overflow-hidden py-4 sm:py-6 md:py-10">
       <div className="grid grid-cols-5 gap-4">
         <button
           onClick={() => {

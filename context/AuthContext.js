@@ -7,7 +7,7 @@ import {
   signOut,
 } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 
 const AuthContext = React.createContext();
 
@@ -17,10 +17,10 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
-  const [userDataOb, setUserDataOb] = useState(null);
+  const [userDataObj, setUserDataObj] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // auth handlers
+  // AUTH HANDLERS
   function signup(email, password) {
     return createUserWithEmailAndPassword(auth, email, password);
   }
@@ -30,7 +30,7 @@ export function AuthProvider({ children }) {
   }
 
   function logout() {
-    setUserDataOb(null);
+    setUserDataObj(null);
     setCurrentUser(null);
     return signOut(auth);
   }
@@ -38,7 +38,7 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       try {
-        // set user to our local context state
+        // Set the user to our local context state
         setLoading(true);
         setCurrentUser(user);
         if (!user) {
@@ -46,16 +46,16 @@ export function AuthProvider({ children }) {
           return;
         }
 
-        // if user exists, fetch from firestore db
-        console.log("fetching user data");
+        // if user exists, fetch data from firestore database
+        console.log("Fetching User Data");
         const docRef = doc(db, "users", user.uid);
         const docSnap = await getDoc(docRef);
         let firebaseData = {};
         if (docSnap.exists()) {
-          console.log("found user data");
+          console.log("Found User Data");
           firebaseData = docSnap.data();
         }
-        setUserDataOb(firebaseData);
+        setUserDataObj(firebaseData);
       } catch (err) {
         console.log(err.message);
       } finally {
@@ -64,14 +64,16 @@ export function AuthProvider({ children }) {
     });
     return unsubscribe;
   }, []);
+
   const value = {
     currentUser,
-    setUserDataOb,
-    userDataOb,
+    userDataObj,
+    setUserDataObj,
     signup,
     logout,
     login,
     loading,
   };
+
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

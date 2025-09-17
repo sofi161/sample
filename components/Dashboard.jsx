@@ -6,6 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { db } from "@/firebase";
 import Loading from "./Loading";
 import Login from "./Login";
+import { doc, setDoc } from "firebase/firestore";
 
 const LibreBaskerville = Libre_Baskerville({
   variable: "--font-libre",
@@ -14,32 +15,48 @@ const LibreBaskerville = Libre_Baskerville({
 });
 
 const Dashboard = () => {
-  const { currentUser, userDataOb, setUserDataObj, loading } = useAuth();
+  const { currentUser, userDataObj, setUserDataObj, loading } = useAuth();
   const [data, setData] = useState({});
+  const now = new Date();
 
-  function countValues() {}
+  function countValues() {
+    let total_number_of_days = 0;
+    let sum_moods = 0;
+    for (let year in data) {
+      for (let month in data[year]) {
+        for (let day in data[year][month]) {
+          let days_mood = data[year][month][day];
+          total_number_of_days++;
+          sum_moods += days_mood;
+        }
+      }
+    }
+    return {
+      num_days: total_number_of_days,
+      average_mood: sum_moods / total_number_of_days,
+    };
+  }
 
   async function handleSetMood(mood) {
-    const now = new Date();
     const day = now.getDate();
     const month = now.getMonth();
     const year = now.getFullYear();
-    try {
-      const newData = { ...userDataOb };
 
+    try {
+      const newData = { ...userDataObj };
       if (!newData?.[year]) {
         newData[year] = {};
       }
-      if (!newData?.[month]) {
+      if (!newData?.[year]?.[month]) {
         newData[year][month] = {};
       }
-      newData[year][month][day] = mood;
 
-      // update current state
+      newData[year][month][day] = mood;
+      // update the current state
       setData(newData);
-      // update global state
+      // update the global state
       setUserDataObj(newData);
-      // update firestore
+      // update firebase
       const docRef = doc(db, "users", currentUser.uid);
       const res = await setDoc(
         docRef,
@@ -53,14 +70,13 @@ const Dashboard = () => {
         { merge: true }
       );
     } catch (err) {
-      console.log("failed to set data: ", err.message);
+      console.log("Failed to set data: ", err.message);
     }
   }
 
   const statuses = {
-    num_days: 14,
-    time_left: "13:14:45",
-    date: new Date().toDateString(),
+    ...countValues(),
+    time_remaining: `${23 - now.getHours()}H ${60 - now.getMinutes()}M`,
   };
 
   const moods = {
@@ -72,11 +88,11 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    if (!currentUser || !userDataOb) {
+    if (!currentUser || !userDataObj) {
       return;
     }
-    setData(userDataOb);
-  }, [currentUser, userDataOb]);
+    setData(userDataObj);
+  }, [currentUser, userDataObj]);
 
   if (!currentUser) {
     return <Login />;
@@ -97,7 +113,7 @@ const Dashboard = () => {
               className="p-4 flex flex-col gap-1
             sm:gap-2 overflow-hidden"
             >
-              <p className="truncate font-medium uppercase text-xs sm:text-sm ">
+              <p className="truncate font-medium capitalize text-xs sm:text-sm ">
                 {status.replaceAll("_", " ")}
               </p>
               <p
@@ -106,7 +122,7 @@ const Dashboard = () => {
                   LibreBaskerville.className
                 }
               >
-                {statuses[status]}
+                {statuses[status]} {status === "num_days" ? "🔥" : ""}
               </p>
             </button>
           );
@@ -144,7 +160,7 @@ const Dashboard = () => {
           );
         })}
       </div>
-      <Calendar data={data} handleSetMood={handleSetMood} />
+      <Calendar completeData={data} handleSetMood={handleSetMood} />
     </div>
   );
 };

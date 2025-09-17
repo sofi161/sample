@@ -14,6 +14,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [isRegister, setIsRegister] = useState(false);
   const [authenticating, setAuthenticating] = useState(false);
+
   const { signup, login } = useAuth();
 
   async function handleSubmit() {
@@ -35,6 +36,7 @@ const Login = () => {
       setAuthenticating(false);
     }
   }
+
   return (
     <div className="flex flex-col justify-center items-center gap-4">
       <h3

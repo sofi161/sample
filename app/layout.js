@@ -2,6 +2,8 @@ import { Libre_Baskerville, Open_Sans } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
 import { AuthProvider } from "@/context/AuthContext";
+import Head from "./head";
+import Logout from "@/components/Logout";
 
 const LibreBaskerville = Libre_Baskerville({
   variable: "--font-libre",
@@ -32,8 +34,7 @@ export default function RootLayout({ children }) {
           Moodl
         </h1>
       </Link>
-
-      <div className="flex items-center justify-between">something here</div>
+      <Logout />
     </header>
   );
 
@@ -46,6 +47,7 @@ export default function RootLayout({ children }) {
   );
   return (
     <html lang="en">
+      <Head />
       <AuthProvider>
         <body
           className={
